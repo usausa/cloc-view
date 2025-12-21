@@ -21,9 +21,6 @@
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <s:CancelEventAction Cancel="{Binding BusyState.IsBusy}" />
-            <i:CallMethodAction IsEnabled="{Binding BusyState.IsBusy, Converter={StaticResource ReverseConverter}}"
-                                MethodName="Save"
-                                TargetObject="{Binding WindowManager}" />
         </i:EventTrigger>
         <i:EventTrigger EventName="Closed">
             <s:DataContextDisposeAction />

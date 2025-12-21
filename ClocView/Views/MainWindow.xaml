@@ -1,0 +1,49 @@
+<mah:MetroWindow xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                 xmlns:s="http://smart/windows"
+                 xmlns:views="clr-namespace:ClocView.Views"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 mc:Ignorable="d"
+                 x:Class="ClocView.Views.MainWindow"
+                 s:DataContextResolver.Type="{x:Type views:MainWindowViewModel}"
+                 d:DataContext="{d:DesignInstance Type={x:Type views:MainWindowViewModel}}"
+                 Width="1024"
+                 Height="768"
+                 Title="MainWindow"
+                 Icon="../App.ico"
+                 ResizeMode="CanResizeWithGrip"
+                 ShowIconOnTitleBar="True"
+                 WindowTransitionsEnabled="False">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <s:CancelEventAction Cancel="{Binding BusyState.IsBusy}" />
+            <i:CallMethodAction IsEnabled="{Binding BusyState.IsBusy, Converter={StaticResource ReverseConverter}}"
+                                MethodName="Save"
+                                TargetObject="{Binding WindowManager}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Closed">
+            <s:DataContextDisposeAction />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button Width="64"
+                    Command="{Binding ExecuteCommand}"
+                    Content="Execute" />
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+
+    <Grid>
+        <mah:MetroProgressBar Height="10"
+                              Margin="0"
+                              VerticalAlignment="Bottom"
+                              Visibility="{Binding BusyState.IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
+                              IsIndeterminate="True" />
+    </Grid>
+
+</mah:MetroWindow>

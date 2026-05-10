@@ -137,6 +137,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 
         UpdateTotals();
     }
+
     private void Cancel()
     {
         cts?.Cancel();

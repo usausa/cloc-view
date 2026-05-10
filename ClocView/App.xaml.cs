@@ -1,7 +1,5 @@
 namespace ClocView;
 
-using ClocView.Views;
-
 public sealed partial class App
 {
     //--------------------------------------------------------------------------------
@@ -22,10 +20,9 @@ public sealed partial class App
     // Lifecycle
     //--------------------------------------------------------------------------------
 
-    // ReSharper disable once AsyncVoidEventHandlerMethod
     protected override void OnStartup(StartupEventArgs e)
     {
-        MainWindow = new MainWindow();
+        MainWindow = new Views.MainWindow();
         MainWindow.Show();
     }
 

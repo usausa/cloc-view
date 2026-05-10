@@ -25,7 +25,7 @@
             <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
         </i:EventTrigger>
         <i:EventTrigger EventName="Closing">
-            <s:CancelEventAction Cancel="{Binding BusyState.IsBusy}" />
+            <i:InvokeCommandAction Command="{Binding CancelCommand}" />
         </i:EventTrigger>
         <i:EventTrigger EventName="Closed">
             <s:DataContextDisposeAction />
@@ -50,6 +50,8 @@
             <MenuItem Header="_File">
                 <MenuItem Command="{Binding ExecuteCommand}"
                           Header="_Refresh" />
+                <MenuItem Command="{Binding CancelCommand}"
+                          Header="_Cancel" />
                 <Separator />
                 <MenuItem Command="{Binding ExportCsvCommand}"
                           Header="Save as _CSV..." />
@@ -86,7 +88,18 @@
                     Margin="1,0,0,0"
                     Padding="10,3"
                     Command="{Binding ExecuteCommand}"
-                    Content="Refresh" />
+                    Content="Refresh">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding BusyState.IsBusy}" Value="True">
+                                <Setter Property="Command" Value="{Binding CancelCommand}" />
+                                <Setter Property="Content" Value="Cancel" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Grid>
 
         <!-- DataGrid -->

@@ -15,6 +15,8 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 {
     private readonly ClocService clocService;
 
+    private CancellationTokenSource? cts;
+
     [ObservableProperty]
     public partial string TargetDirectory { get; set; } = string.Empty;
 
@@ -33,6 +35,8 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
     public ObservableCollection<ClocRecord> Records { get; } = [];
 
     public ICommand ExecuteCommand { get; }
+
+    public ICommand CancelCommand { get; }
 
     public ICommand DeleteCommand { get; }
 
@@ -61,12 +65,33 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
         }
 
         ExecuteCommand = MakeAsyncCommand(ExecuteAsync, () => !BusyState.IsBusy);
+        CancelCommand = new DelegateCommand(Cancel, () => BusyState.IsBusy);
         DeleteCommand = new DelegateCommand<IList>(DeleteSelected);
         ExportCsvCommand = new DelegateCommand(ExportCsv, () => Records.Count > 0);
         SelectDirectoryCommand = new DelegateCommand(SelectDirectory, () => !BusyState.IsBusy);
-        ExitCommand = new DelegateCommand(Application.Current.Shutdown);
+        ExitCommand = new DelegateCommand(() =>
+        {
+            Cancel();
+            Application.Current.Shutdown();
+        });
         LoadedCommand = MakeAsyncCommand(OnLoadedAsync);
         DropCommand = MakeAsyncCommand<IDataObject>(OnDropAsync);
+    }
+
+    //--------------------------------------------------------------------------------
+    // Dispose
+    //--------------------------------------------------------------------------------
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
+        }
+
+        base.Dispose(disposing);
     }
 
     //--------------------------------------------------------------------------------
@@ -116,12 +141,25 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 
         UpdateTotals();
     }
+    private void Cancel()
+    {
+        cts?.Cancel();
+    }
+
     private async Task ExecuteAsync()
     {
         if (string.IsNullOrWhiteSpace(TargetDirectory))
         {
             return;
         }
+
+        if (cts is not null)
+        {
+            await cts.CancelAsync();
+            cts.Dispose();
+        }
+        cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         Records.Clear();
         UpdateTotals();
@@ -130,7 +168,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 #pragma warning disable CA1031
         try
         {
-            var records = await clocService.ExecuteAsync(TargetDirectory).ConfigureAwait(true);
+            var records = await clocService.ExecuteAsync(TargetDirectory, ct).ConfigureAwait(true);
 
             var baseDir = TargetDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                           + Path.DirectorySeparatorChar;
@@ -150,6 +188,10 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
             UpdateTotals();
             StatusMessage = $"Completed. {Records.Count} items.";
         }
+        catch (OperationCanceledException)
+        {
+            StatusMessage = "Cancelled.";
+        }
         catch (Exception ex)
         {
             StatusMessage = $"Error: {ex.Message}";
@@ -163,7 +205,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
         {
             Filter = "CSV files (*.csv)|*.csv",
             DefaultExt = "csv",
-            FileName = "cloc_result",
+            FileName = "cloc_result"
         };
 
         if (dialog.ShowDialog() != true)

@@ -37,7 +37,8 @@ public sealed class ClocService
         var output = await process.StandardOutput.ReadToEndAsync(cancel).ConfigureAwait(false);
         await process.WaitForExitAsync(cancel).ConfigureAwait(false);
 
-        return ParseCsv(output);
+        var records = ParseCsv(output);
+        return ApplyExcludeSegmentPrefix(records);
     }
 
     private void BuildArguments(Collection<string> args, string targetDirectory)
@@ -71,17 +72,30 @@ public sealed class ClocService
             args.Add($"--exclude-content={opt.ExcludeContent}");
         }
 
-        if (!string.IsNullOrWhiteSpace(opt.NotMatchDir))
-        {
-            args.Add($"--not-match-d={opt.NotMatchDir}");
-        }
-
-        if (!string.IsNullOrWhiteSpace(opt.NotMatchFile))
-        {
-            args.Add($"--not-match-f={opt.NotMatchFile}");
-        }
-
         args.Add(targetDirectory);
+    }
+
+    private List<ClocRecord> ApplyExcludeSegmentPrefix(List<ClocRecord> records)
+    {
+        var prefix = settings.Option.ExcludePrefix;
+        if (string.IsNullOrWhiteSpace(prefix))
+        {
+            return records;
+        }
+
+        var prefixes = prefix.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (prefixes.Length == 0)
+        {
+            return records;
+        }
+
+        return records.Where(r => !PathHasSegmentWithPrefix(r.Filename ?? string.Empty, prefixes)).ToList();
+    }
+
+    private static bool PathHasSegmentWithPrefix(string path, string[] prefixes)
+    {
+        var segments = path.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+        return segments.Any(seg => prefixes.Any(p => seg.StartsWith(p, StringComparison.OrdinalIgnoreCase)));
     }
 
     private static List<ClocRecord> ParseCsv(string csv)

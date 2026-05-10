@@ -12,9 +12,7 @@ public sealed class ClocOption
 
     public string? ExcludeContent { get; set; }
 
-    public string? NotMatchDir { get; set; }
-
-    public string? NotMatchFile { get; set; }
+    public string? ExcludePrefix { get; set; }
 }
 
 public sealed class ClocSetting

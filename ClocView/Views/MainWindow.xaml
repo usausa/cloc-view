@@ -5,6 +5,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:s="http://smart/windows"
         xmlns:views="clr-namespace:ClocView.Views"
+        xmlns:behaviors="clr-namespace:ClocView.Behaviors"
         mc:Ignorable="d"
         x:Class="ClocView.Views.MainWindow"
         d:DataContext="{d:DesignInstance Type={x:Type views:MainWindowViewModel}}"
@@ -12,8 +13,6 @@
         Height="768"
         Title="ClocView"
         Icon="../App.ico"
-        AllowDrop="True"
-        DragOver="OnDragOver"
         ResizeMode="CanResizeWithGrip">
 
     <Window.DataContext>
@@ -31,12 +30,12 @@
         <i:EventTrigger EventName="Closed">
             <s:DataContextDisposeAction />
         </i:EventTrigger>
-        <!-- Drag and Drop -->
-        <i:EventTrigger EventName="Drop">
-            <i:InvokeCommandAction Command="{Binding DropCommand}"
-                                   PassEventArgsToCommand="True" />
-        </i:EventTrigger>
     </i:Interaction.Triggers>
+
+    <i:Interaction.Behaviors>
+        <!-- Drag and Drop -->
+        <behaviors:FileDragDropBehavior DropCommand="{Binding DropCommand}" />
+    </i:Interaction.Behaviors>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -106,8 +105,10 @@
                   HeadersVisibility="Column"
                   HorizontalGridLinesBrush="{StaticResource GridLineBrush}"
                   IsReadOnly="True"
-                  PreviewKeyDown="OnGridPreviewKeyDown"
                   SelectionMode="Extended">
+            <i:Interaction.Behaviors>
+                <behaviors:DataGridDeleteKeyBehavior DeleteCommand="{Binding DeleteCommand}" />
+            </i:Interaction.Behaviors>
             <DataGrid.Columns>
                 <DataGridTextColumn Width="120"
                                     Binding="{Binding Language}"

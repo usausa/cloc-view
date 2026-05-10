@@ -2,8 +2,6 @@ namespace ClocView.Views;
 
 using System.Text.Json;
 
-using ClocView.Services;
-
 using CsvHelper;
 using CsvHelper.Configuration;
 
@@ -53,7 +51,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
     public MainWindowViewModel()
     {
         var settings = LoadSettings();
-        clocService = new ClocService(settings.Cloc);
+        clocService = new ClocService(settings);
 
         // 起動引数: index 0 は実行ファイル自身なので 1 以降を参照
         var args = Environment.GetCommandLineArgs();
@@ -66,9 +64,9 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
         DeleteCommand = new DelegateCommand<IList>(DeleteSelected);
         ExportCsvCommand = new DelegateCommand(ExportCsv, () => Records.Count > 0);
         SelectDirectoryCommand = new DelegateCommand(SelectDirectory, () => !BusyState.IsBusy);
-        ExitCommand = new DelegateCommand(() => Application.Current.Shutdown());
+        ExitCommand = new DelegateCommand(Application.Current.Shutdown);
         LoadedCommand = MakeAsyncCommand(OnLoadedAsync);
-        DropCommand = MakeAsyncCommand<DragEventArgs>(OnDropAsync);
+        DropCommand = MakeAsyncCommand<IDataObject>(OnDropAsync);
     }
 
     //--------------------------------------------------------------------------------
@@ -83,9 +81,9 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
         }
     }
 
-    private async Task OnDropAsync(DragEventArgs e)
+    private async Task OnDropAsync(IDataObject data)
     {
-        if (e.Data.GetData(DataFormats.FileDrop) is not string[] paths)
+        if (data.GetData(DataFormats.FileDrop) is not string[] paths)
         {
             return;
         }
@@ -129,6 +127,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
         UpdateTotals();
         StatusMessage = "Running cloc...";
 
+#pragma warning disable CA1031
         try
         {
             var records = await clocService.ExecuteAsync(TargetDirectory).ConfigureAwait(true);
@@ -155,6 +154,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
         {
             StatusMessage = $"Error: {ex.Message}";
         }
+#pragma warning restore CA1031
     }
 
     private void ExportCsv()
@@ -199,37 +199,36 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
     }
 
     //--------------------------------------------------------------------------------
-    // Settings
+    // Setting
     //--------------------------------------------------------------------------------
 
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-    private static ClientSettings LoadSettings()
+    private static ClocSetting LoadSettings()
     {
         var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
         if (!File.Exists(path))
         {
-            return new ClientSettings();
+            return new ClocSetting();
         }
 
+#pragma warning disable CA1031
         try
         {
             var json = File.ReadAllText(path);
             using var doc = JsonDocument.Parse(json);
 
-            if (!doc.RootElement.TryGetProperty("Client", out var clientElement))
+            if (!doc.RootElement.TryGetProperty("Cloc", out var clocElement))
             {
-                return new ClientSettings();
+                return new ClocSetting();
             }
 
-            return JsonSerializer.Deserialize<ClientSettings>(clientElement.GetRawText(), JsonOptions)
-                   ?? new ClientSettings();
+            return JsonSerializer.Deserialize<ClocSetting>(clocElement.GetRawText(), JsonOptions) ?? new ClocSetting();
         }
         catch
         {
-            return new ClientSettings();
+            return new ClocSetting();
         }
+#pragma warning restore CA1031
     }
 }
-
-

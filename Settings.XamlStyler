@@ -2,7 +2,7 @@
   "AttributesTolerance": 1,
   "KeepFirstAttributeOnSameLine": true,
   "MaxAttributeCharactersPerLine": 0,
-  "MaxAttributesPerLine": 1,
+  "MaxAttributesPerLine": 4,
   "NewlineExemptionElements": "RadialGradientBrush, GradientStop, LinearGradientBrush, ScaleTransform, SkewTransform, RotateTransform, TranslateTransform, Trigger, Condition, Setter, On",
   "SeparateByGroups": true,
   "AttributeIndentation": 0,
@@ -15,8 +15,6 @@
     "xmlns:d",
     "xmlns:mc",
 
-    "xmlns:i",
-
     "xmlns:s",
     "xmlns:navigation",
 
@@ -24,6 +22,7 @@
     "xmlns:local",
     "xmlns:dialog",
     "xmlns:core",
+    "xmlns:resources",
     "xmlns:shell",
     "xmlns:behaviors",
     "xmlns:controls",
@@ -33,8 +32,6 @@
     "xmlns:markup",
     "xmlns:module",
     "xmlns:views",
-    "xmlns:resources",
-    "xmlns:fonts",
 
     "xmlns:*",
 
@@ -67,11 +64,15 @@
     "d:DataContext",
 
     "Style",
+    "StyleClass",
 
     "RowDefinitions",
     "ColumnDefinitions",
     "Width, Height, MinWidth, MinHeight, MaxWidth, MaxHeight, WidthRequest, HeightRequest",
     "d:DesignWidth, d:DesignHeight",
+
+    "CanResize",
+    "WindowState",
 
     "Title",
     "Icon",
@@ -86,6 +87,7 @@
     "Margin, Padding",
     "HorizontalTextAlignment, VerticalTextAlignment",
     "HorizontalAlignment, VerticalAlignment",
+    "Panel.ZIndex",
 
     "ItemsSource",
     "Source",
@@ -94,7 +96,7 @@
     "Command, CommandParameter",
 
     "IsEnabled",
-    "Visibility",
+    "IsVisible",
 
     "Value",
     "Minimum, Maximum",

@@ -1,28 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <!--
+    <TargetFrameworks>net10.0;net10.0-windows;net10.0-macos</TargetFrameworks>
+    -->
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <SatelliteResourceLanguages>en;ja</SatelliteResourceLanguages>
-    <ApplicationIcon>App.ico</ApplicationIcon>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="33.1.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
-    <PackageReference Include="System.Reactive" Version="6.1.0" />
-    <PackageReference Include="Usa.Smart.Core" Version="2.8.0" />
-    <PackageReference Include="Usa.Smart.Mapper" Version="0.9.0" />
-    <PackageReference Include="Usa.Smart.Mvvm" Version="2.2.0" />
-    <PackageReference Include="Usa.Smart.Reactive" Version="2.8.0" />
-    <PackageReference Include="Usa.Smart.Windows" Version="2.20.0" />
-    <PackageReference Include="Usa.Smart.Windows.Extensions" Version="2.20.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="App.ico" />
+    <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,7 +30,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Usa.Smart.Analyzers.JapaneseComment" Version="1.6.0" />
+    <PackageReference Include="Avalonia" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.0.2" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.14">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.0.0" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="Usa.Smart.Avalonia" Version="2.15.0" />
+    <PackageReference Include="Usa.Smart.Avalonia.Extensions" Version="2.15.0" />
+    <PackageReference Include="Usa.Smart.Core" Version="2.8.0" />
+    <PackageReference Include="Usa.Smart.Mvvm" Version="2.2.0" />
+    <PackageReference Include="Usa.Smart.Reactive" Version="2.8.0" />
+    <PackageReference Include="Xaml.Behaviors.Avalonia" Version="12.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\" />
   </ItemGroup>
 
 </Project>

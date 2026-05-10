@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "ClocView": {
+    "DesktopApp": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

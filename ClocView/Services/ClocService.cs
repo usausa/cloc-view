@@ -71,6 +71,16 @@ public sealed class ClocService
             args.Add($"--exclude-content={opt.ExcludeContent}");
         }
 
+        if (!string.IsNullOrWhiteSpace(opt.NotMatchDir))
+        {
+            args.Add($"--not-match-d={opt.NotMatchDir}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(opt.NotMatchFile))
+        {
+            args.Add($"--not-match-f={opt.NotMatchFile}");
+        }
+
         args.Add(targetDirectory);
     }
 

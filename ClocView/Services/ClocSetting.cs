@@ -11,6 +11,10 @@ public sealed class ClocOption
     public string? ExcludeExt { get; set; }
 
     public string? ExcludeContent { get; set; }
+
+    public string? NotMatchDir { get; set; }
+
+    public string? NotMatchFile { get; set; }
 }
 
 public sealed class ClocSetting

@@ -9,7 +9,6 @@ using Microsoft.Win32;
 
 using Smart.Windows.Input;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 [ObservableGeneratorOption(Reactive = true, ViewModel = true)]
 public sealed partial class MainWindowViewModel : ExtendViewModelBase
 {
@@ -46,10 +45,8 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 
     public ICommand ExitCommand { get; }
 
-    /// <summary>Window.Loaded にバインドし、起動引数があれば自動実行する。</summary>
     public ICommand LoadedCommand { get; }
 
-    /// <summary>D&amp;D で渡された IDataObject を受け取り、フォルダがあれば処理する。</summary>
     public ICommand DropCommand { get; }
 
     public MainWindowViewModel()
@@ -57,7 +54,6 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
         var settings = LoadSettings();
         clocService = new ClocService(settings);
 
-        // 起動引数: index 0 は実行ファイル自身なので 1 以降を参照
         var args = Environment.GetCommandLineArgs();
         if (args.Length > 1 && Directory.Exists(args[1]))
         {
@@ -181,7 +177,10 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
                         ? record.Filename[baseDir.Length..]
                         : record.Filename;
                 }
+            }
 
+            foreach (var record in records.OrderBy(r => Path.GetDirectoryName(r.RelativePath)).ThenBy(r => r.Language))
+            {
                 Records.Add(record);
             }
 

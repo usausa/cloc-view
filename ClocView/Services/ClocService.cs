@@ -122,8 +122,7 @@ public sealed class ClocService
         {
             HasHeaderRecord = true,
             MissingFieldFound = null,
-            BadDataFound = null,
-            HeaderValidated = null
+            BadDataFound = null
         };
 
         using var reader = new StringReader(csvBody);
@@ -137,12 +136,12 @@ public sealed class ClocService
         while (csvReader.Read())
         {
             var language = csvReader.GetField("language") ?? string.Empty;
-            if (string.Equals(language, "SUM", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(language, "SUM", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
-            #pragma warning disable CA1031
+#pragma warning disable CA1031
             try
             {
                 records.Add(csvReader.GetRecord<ClocRecord>());

@@ -21,6 +21,7 @@ public sealed class ClocService
         var startInfo = new ProcessStartInfo
         {
             FileName = executable,
+            WorkingDirectory = targetDirectory,
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,

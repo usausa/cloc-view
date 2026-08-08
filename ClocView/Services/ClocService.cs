@@ -1,9 +1,12 @@
 namespace ClocView.Services;
 
+using System.ComponentModel;
 using System.Diagnostics;
 
 using CsvHelper;
 using CsvHelper.Configuration;
+
+public sealed record ClocResult(IReadOnlyList<ClocRecord> Records, int SkippedRows);
 
 public sealed class ClocService
 {
@@ -14,7 +17,7 @@ public sealed class ClocService
         this.settings = settings;
     }
 
-    public async Task<List<ClocRecord>> ExecuteAsync(string targetDirectory, CancellationToken cancel = default)
+    public async Task<ClocResult> ExecuteAsync(string targetDirectory, CancellationToken cancel = default)
     {
         var executable = string.IsNullOrWhiteSpace(settings.ExecutablePath) ? "cloc" : settings.ExecutablePath;
 
@@ -33,13 +36,28 @@ public sealed class ClocService
 
         using var process = new Process();
         process.StartInfo = startInfo;
-        process.Start();
 
-        var output = await process.StandardOutput.ReadToEndAsync(cancel).ConfigureAwait(false);
+        try
+        {
+            process.Start();
+        }
+        catch (Win32Exception e)
+        {
+            throw new InvalidOperationException($"cloc is not found. Set Cloc:ExecutablePath. executable=[{executable}]", e);
+        }
+
+        var stdoutTask = process.StandardOutput.ReadToEndAsync(cancel);
+        var stderrTask = process.StandardError.ReadToEndAsync(cancel);
+        var streams = await Task.WhenAll(stdoutTask, stderrTask).ConfigureAwait(false);
         await process.WaitForExitAsync(cancel).ConfigureAwait(false);
 
-        var records = ParseCsv(output);
-        return ApplyExcludeSegmentPrefix(records);
+        if (process.ExitCode != 0)
+        {
+            throw new InvalidOperationException($"cloc failed. exitCode=[{process.ExitCode}], error=[{streams[1].Trim()}]");
+        }
+
+        var (records, skipped) = ParseCsv(streams[0]);
+        return new ClocResult(ApplyExcludeSegmentPrefix(records), skipped);
     }
 
     private void BuildArguments(Collection<string> args, string targetDirectory)
@@ -99,7 +117,7 @@ public sealed class ClocService
         return segments.Any(seg => prefixes.Any(p => seg.StartsWith(p, StringComparison.OrdinalIgnoreCase)));
     }
 
-    private static List<ClocRecord> ParseCsv(string csv)
+    private static (List<ClocRecord> Records, int Skipped) ParseCsv(string csv)
     {
         var lines = csv.Split('\n');
         var headerIndex = Array.FindIndex(
@@ -113,7 +131,7 @@ public sealed class ClocService
 
         if (headerIndex < 0)
         {
-            return [];
+            return ([], 0);
         }
 
         var csvBody = string.Join('\n', lines.Skip(headerIndex));
@@ -129,6 +147,7 @@ public sealed class ClocService
         using var csvReader = new CsvReader(reader, config);
 
         var records = new List<ClocRecord>();
+        var skipped = 0;
 
         csvReader.Read();
         csvReader.ReadHeader();
@@ -148,11 +167,11 @@ public sealed class ClocService
             }
             catch
             {
-                // Ignore
+                skipped++;
             }
 #pragma warning restore CA1031
         }
 
-        return records;
+        return (records, skipped);
     }
 }

@@ -18,7 +18,7 @@ Customize behavior via `appsettings.json` located in the same folder as the exec
       "ExcludeDir": "lib,Sandbox",
       "ExcludeExt": "min.js,min.css",
       "ExcludeContent": "auto-generated",
-      "ExcludeSegmentPrefix": "__"
+      "ExcludePrefix": "__"
     }
   }
 }

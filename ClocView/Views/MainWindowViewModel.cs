@@ -165,12 +165,12 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 #pragma warning disable CA1031
         try
         {
-            var records = await clocService.ExecuteAsync(TargetDirectory, ct).ConfigureAwait(true);
+            var result = await clocService.ExecuteAsync(TargetDirectory, ct).ConfigureAwait(true);
 
             var baseDir = TargetDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                           + Path.DirectorySeparatorChar;
 
-            foreach (var record in records)
+            foreach (var record in result.Records)
             {
                 if (!string.IsNullOrEmpty(record.Filename))
                 {
@@ -180,13 +180,15 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
                 }
             }
 
-            foreach (var record in records.OrderBy(r => Path.GetDirectoryName(r.RelativePath)).ThenBy(r => r.Language))
+            foreach (var record in result.Records.OrderBy(r => Path.GetDirectoryName(r.RelativePath)).ThenBy(r => r.Language))
             {
                 Records.Add(record);
             }
 
             UpdateTotals();
-            StatusMessage = $"Completed. {Records.Count} items.";
+            StatusMessage = result.SkippedRows > 0
+                ? $"Completed. {Records.Count} items. ({result.SkippedRows} rows skipped)"
+                : $"Completed. {Records.Count} items.";
         }
         catch (OperationCanceledException)
         {

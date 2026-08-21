@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -12,13 +12,13 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
-    <PackageReference Include="System.Reactive" Version="6.1.0" />
-    <PackageReference Include="Usa.Smart.Core" Version="2.8.0" />
+    <PackageReference Include="System.Reactive" Version="7.0.0" />
+    <PackageReference Include="Usa.Smart.Core" Version="2.18.0" />
     <PackageReference Include="Usa.Smart.Mapper" Version="0.9.0" />
-    <PackageReference Include="Usa.Smart.Mvvm" Version="2.2.0" />
-    <PackageReference Include="Usa.Smart.Reactive" Version="2.8.0" />
-    <PackageReference Include="Usa.Smart.Windows" Version="2.20.0" />
-    <PackageReference Include="Usa.Smart.Windows.Extensions" Version="2.20.0" />
+    <PackageReference Include="Usa.Smart.Mvvm" Version="2.9.0" />
+    <PackageReference Include="Usa.Smart.Reactive" Version="2.15.0" />
+    <PackageReference Include="Usa.Smart.Windows" Version="2.26.0" />
+    <PackageReference Include="Usa.Smart.Windows.Extensions" Version="2.26.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,10 +36,6 @@
       <DependentUpon>appsettings.json</DependentUpon>
       <ExcludeFromSingleFile>True</ExcludeFromSingleFile>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Usa.Smart.Analyzers.JapaneseComment" Version="1.6.0" />
   </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@ public sealed class ClocService
 
     public async Task<ClocResult> ExecuteAsync(string targetDirectory, CancellationToken cancel = default)
     {
-        var executable = string.IsNullOrWhiteSpace(settings.ExecutablePath) ? "cloc" : settings.ExecutablePath;
+        var executable = String.IsNullOrWhiteSpace(settings.ExecutablePath) ? "cloc" : settings.ExecutablePath;
 
         var startInfo = new ProcessStartInfo
         {
@@ -71,22 +71,22 @@ public sealed class ClocService
             args.Add("--by-file");
         }
 
-        if (!string.IsNullOrWhiteSpace(opt.IncludeLang))
+        if (!String.IsNullOrWhiteSpace(opt.IncludeLang))
         {
             args.Add($"--include-lang={opt.IncludeLang}");
         }
 
-        if (!string.IsNullOrWhiteSpace(opt.ExcludeDir))
+        if (!String.IsNullOrWhiteSpace(opt.ExcludeDir))
         {
             args.Add($"--exclude-dir={opt.ExcludeDir}");
         }
 
-        if (!string.IsNullOrWhiteSpace(opt.ExcludeExt))
+        if (!String.IsNullOrWhiteSpace(opt.ExcludeExt))
         {
             args.Add($"--exclude-ext={opt.ExcludeExt}");
         }
 
-        if (!string.IsNullOrWhiteSpace(opt.ExcludeContent))
+        if (!String.IsNullOrWhiteSpace(opt.ExcludeContent))
         {
             args.Add($"--exclude-content={opt.ExcludeContent}");
         }
@@ -97,7 +97,7 @@ public sealed class ClocService
     private List<ClocRecord> ApplyExcludeSegmentPrefix(List<ClocRecord> records)
     {
         var prefix = settings.Option.ExcludePrefix;
-        if (string.IsNullOrWhiteSpace(prefix))
+        if (String.IsNullOrWhiteSpace(prefix))
         {
             return records;
         }
@@ -134,7 +134,7 @@ public sealed class ClocService
             return ([], 0);
         }
 
-        var csvBody = string.Join('\n', lines.Skip(headerIndex));
+        var csvBody = String.Join('\n', lines.Skip(headerIndex));
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {

@@ -41,7 +41,7 @@ public sealed class FileDragDropBehavior : Behavior<UIElement>
     private void OnDrop(object sender, DragEventArgs e)
     {
         var command = DropCommand;
-        if (command is null || !command.CanExecute(e.Data))
+        if ((command is null) || !command.CanExecute(e.Data))
         {
             return;
         }

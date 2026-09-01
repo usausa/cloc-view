@@ -55,7 +55,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
         clocService = new ClocService(settings);
 
         var args = Environment.GetCommandLineArgs();
-        if (args.Length > 1 && Directory.Exists(args[1]))
+        if ((args.Length > 1) && Directory.Exists(args[1]))
         {
             TargetDirectory = args[1];
         }
@@ -96,7 +96,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 
     private async Task OnLoadedAsync()
     {
-        if (!string.IsNullOrWhiteSpace(TargetDirectory))
+        if (!String.IsNullOrWhiteSpace(TargetDirectory))
         {
             await ExecuteAsync().ConfigureAwait(true);
         }
@@ -125,7 +125,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 
     private void DeleteSelected(IList? selectedItems)
     {
-        if (selectedItems is null || selectedItems.Count == 0)
+        if ((selectedItems is null) || (selectedItems.Count == 0))
         {
             return;
         }
@@ -145,7 +145,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 
     private async Task ExecuteAsync()
     {
-        if (string.IsNullOrWhiteSpace(TargetDirectory))
+        if (String.IsNullOrWhiteSpace(TargetDirectory))
         {
             return;
         }
@@ -172,7 +172,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 
             foreach (var record in result.Records)
             {
-                if (!string.IsNullOrEmpty(record.Filename))
+                if (!String.IsNullOrEmpty(record.Filename))
                 {
                     record.RelativePath = record.Filename.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase)
                         ? record.Filename[baseDir.Length..]

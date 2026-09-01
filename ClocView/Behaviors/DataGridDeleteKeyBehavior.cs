@@ -48,7 +48,7 @@ public sealed class DataGridDeleteKeyBehavior : Behavior<DataGrid>
         e.Handled = true;
 
         var command = DeleteCommand;
-        if (command is null || !command.CanExecute(grid.SelectedItems))
+        if ((command is null) || !command.CanExecute(grid.SelectedItems))
         {
             return;
         }

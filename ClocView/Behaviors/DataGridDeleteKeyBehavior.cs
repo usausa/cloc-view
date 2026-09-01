@@ -62,7 +62,7 @@ public sealed class DataGridDeleteKeyBehavior : Behavior<DataGrid>
             command.Execute(targets);
         }
 
-        if (grid.ItemsSource is not IList items || items.Count == 0)
+        if ((grid.ItemsSource is not IList items) || (items.Count == 0))
         {
             return;
         }

@@ -90,7 +90,9 @@ public sealed class ClocService
             return records;
         }
 
+#pragma warning disable IDE0028
         return records.Where(r => !PathHasSegmentWithPrefix(r.Filename ?? string.Empty, prefixes)).ToList();
+#pragma warning restore IDE0028
     }
 
     private static bool PathHasSegmentWithPrefix(string path, string[] prefixes)

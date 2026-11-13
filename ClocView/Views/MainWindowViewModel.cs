@@ -180,7 +180,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
                 }
             }
 
-            foreach (var record in result.Records.OrderBy(r => Path.GetDirectoryName(r.RelativePath)).ThenBy(r => r.Language))
+            foreach (var record in result.Records.OrderBy(r => Path.GetDirectoryName(r.RelativePath), StringComparer.Ordinal).ThenBy(r => r.Language, StringComparer.Ordinal))
             {
                 Records.Add(record);
             }

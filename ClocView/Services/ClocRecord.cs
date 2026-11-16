@@ -1,25 +1,25 @@
 namespace ClocView.Services;
 
-using CsvHelper.Configuration.Attributes;
+using CsvHelper;
 
-public sealed class ClocRecord
+[CsvRecord]
+public sealed partial class ClocRecord
 {
-    [Name("language")]
+    [CsvColumn("language")]
     public string Language { get; set; } = string.Empty;
 
-    [Name("filename")]
-    [Optional]
+    [CsvColumn("filename", Optional = true)]
     public string? Filename { get; set; }
 
-    [Name("blank")]
+    [CsvColumn("blank")]
     public int Blank { get; set; }
 
-    [Name("comment")]
+    [CsvColumn("comment")]
     public int Comment { get; set; }
 
-    [Name("code")]
+    [CsvColumn("code")]
     public int Code { get; set; }
 
-    [Ignore]
+    [CsvIgnore]
     public string RelativePath { get; set; } = string.Empty;
 }

@@ -3,7 +3,6 @@ namespace ClocView.Views;
 using System.Text.Json;
 
 using CsvHelper;
-using CsvHelper.Configuration;
 
 using Microsoft.Win32;
 
@@ -215,9 +214,12 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
             return;
         }
 
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture);
+        var options = new CsvWriterOptions
+        {
+            Quoting = CsvQuoting.WhenNeededOrWhitespace
+        };
         using var writer = new StreamWriter(dialog.FileName, append: false, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
-        using var csv = new CsvWriter(writer, config);
+        using var csv = CsvWriter.Create(writer, options);
         csv.WriteRecords(Records);
 
         StatusMessage = $"Saved: {dialog.FileName}";

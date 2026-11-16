@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 
 using CsvHelper;
-using CsvHelper.Configuration;
 
 public sealed record ClocResult(IReadOnlyList<ClocRecord> Records, int SkippedRows);
 
@@ -136,25 +135,20 @@ public sealed class ClocService
 
         var csvBody = String.Join('\n', lines.Skip(headerIndex));
 
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        var options = new CsvReaderOptions
         {
-            HasHeaderRecord = true,
-            MissingFieldFound = null,
-            BadDataFound = null
+            Separator = ',',
+            HasHeader = true
         };
 
-        using var reader = new StringReader(csvBody);
-        using var csvReader = new CsvReader(reader, config);
+        using var csvReader = CsvReader.FromText(csvBody, options);
 
         var records = new List<ClocRecord>();
         var skipped = 0;
 
-        csvReader.Read();
-        csvReader.ReadHeader();
-
         while (csvReader.Read())
         {
-            var language = csvReader.GetField("language") ?? string.Empty;
+            var language = csvReader.GetString("language");
             if (String.Equals(language, "SUM", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
